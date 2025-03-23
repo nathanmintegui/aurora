@@ -15,7 +15,10 @@ public class Error : IEquatable<Error>
 
     public string Message { get; }
 
-    public static implicit operator string(Error error) => error.Code;
+    public static implicit operator string(Error error)
+    {
+        return error.Code;
+    }
 
     public static bool operator ==(Error? a, Error? b)
     {
@@ -32,7 +35,10 @@ public class Error : IEquatable<Error>
         return a.Equals(b);
     }
 
-    public static bool operator !=(Error? a, Error? b) => !(a == b);
+    public static bool operator !=(Error? a, Error? b)
+    {
+        return !(a == b);
+    }
 
     public virtual bool Equals(Error? other)
     {
@@ -44,10 +50,18 @@ public class Error : IEquatable<Error>
         return Code == other.Code && Message == other.Message;
     }
 
-    public override bool Equals(object? obj) => obj is Error error && Equals(error);
+    public override bool Equals(object? obj)
+    {
+        return obj is Error error && Equals(error);
+    }
 
-    public override int GetHashCode() => HashCode.Combine(Code, Message);
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Code, Message);
+    }
 
-    public override string ToString() => Code;
+    public override string ToString()
+    {
+        return Code;
+    }
 }
-

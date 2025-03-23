@@ -20,4 +20,3 @@ public sealed class DbSession : IDisposable
         Connection?.Dispose();
     }
 }
-

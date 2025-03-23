@@ -21,4 +21,3 @@ public readonly record struct NonEmptyString
         return Value;
     }
 }
-

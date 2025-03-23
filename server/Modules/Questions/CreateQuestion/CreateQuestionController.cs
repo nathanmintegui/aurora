@@ -11,20 +11,22 @@ using Server.Modules.Questions.Infrastructure;
 
 namespace Server.Modules.Questions.CreateQuestion;
 
+[ApiController]
 [Route("/questions")]
 public class CreateQuestionController(
-        ILogger<CreateQuestionController> logger,
-        IUnitOfWork unitOfWork,
-        IQuestionRepository questionRepository
+    ILogger<CreateQuestionController> logger,
+    IUnitOfWork unitOfWork,
+    IQuestionRepository questionRepository
 ) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateQuestionRequest request)
     {
-        logger.LogInformation($"{DateTime.Now.ToString("HH:mm:ss")} | POST /questions");
+        logger.LogInformation("{Time} | POST /questions", DateTime.Now.ToString("HH:mm:ss"));
 
-        var resultadoValidacao = new List<ValidationResult>();
-        var contexto = new ValidationContext(request, null, null);
+
+        List<ValidationResult> resultadoValidacao = new();
+        ValidationContext contexto = new(request, null, null);
         Validator.TryValidateObject(request, contexto, resultadoValidacao, true);
 
         if (resultadoValidacao.Count > 0)
@@ -47,7 +49,7 @@ public class CreateQuestionController(
         }
         catch (NpgsqlException e)
         {
-            logger.LogError(e.Message);
+            logger.LogWarning(e, "Failed to persist changes.");
             unitOfWork.Rollback();
         }
         finally
@@ -60,4 +62,3 @@ public class CreateQuestionController(
         return Created();
     }
 }
-

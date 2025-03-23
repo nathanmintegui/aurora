@@ -4,17 +4,12 @@ namespace Server.Domain.Models;
 
 public sealed class Complexity
 {
-    private static readonly IReadOnlyList<Complexity> _validComplexities;
-
-    static Complexity()
+    private static readonly IReadOnlyList<Complexity> _validComplexities = new List<Complexity>
     {
-        _validComplexities = new List<Complexity>
-        {
-            new Complexity(ComplexityId.Create(1), "Easy"),
-            new Complexity(ComplexityId.Create(2), "Medium"),
-            new Complexity(ComplexityId.Create(3), "Hard"),
-        };
-    }
+        new(ComplexityId.Create(1), "Easy"),
+        new(ComplexityId.Create(2), "Medium"),
+        new(ComplexityId.Create(3), "Hard")
+    };
 
     private Complexity(ComplexityId id, string description)
     {
@@ -44,6 +39,8 @@ public readonly record struct ComplexityId(int Value)
 {
     public static ComplexityId Empty => new(0);
 
-    public static ComplexityId Create(int value) => new(value);
+    public static ComplexityId Create(int value)
+    {
+        return new ComplexityId(value);
+    }
 }
-

@@ -25,20 +25,20 @@ public class Question
     public static Question Create(NonEmptyString Content, Complexity Complexity)
     {
         Question question = new(
-                QuestionId.Empty,
-                PublicQuestionId.Create(Guid.NewGuid()),
-                Complexity,
-                Content,
-                DateTime.Now,
-                DateTime.Now);
+            QuestionId.Empty,
+            PublicQuestionId.Create(Guid.NewGuid()),
+            Complexity,
+            Content,
+            DateTime.Now,
+            DateTime.Now);
 
         return question;
     }
 
     public QuestionId Id { get; internal set; }
     public PublicQuestionId PublicId { get; internal set; }
-    public Models.Complexity Complexity;
-    public String Content { get; }
+    public Complexity Complexity { get; }
+    public string Content { get; }
     public DateTime CreatedAt { get; }
     public DateTime UpdatedAt { get; }
 }
@@ -62,4 +62,3 @@ public record struct PublicQuestionId(Guid Value)
         return new PublicQuestionId(value);
     }
 }
-

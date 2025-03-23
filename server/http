@@ -1,0 +1,7 @@
+## POST /questions/{id}/submit
+
+curl -i -X POST http://localhost:5002/questions/5353aedc-c178-4677-a9dd-53cb2644a078/submit \
+     -H "Content-Type: application/json" \
+     -d '{"code": "yaya", "lang": "1"}'
+
+

@@ -14,4 +14,3 @@ public class CreateQuestionRequest
     [Required(ErrorMessage = "The {0} value cannot be null.")]
     public required string MainCodeFuncion { get; set; }
 };
-
