@@ -2,11 +2,13 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -46,6 +48,19 @@ func main() {
 		nil,          // arguments
 	)
 	failOnError(err, "Failed to declare a queue")
+
+	queueResponse, err := ch.QueueDeclare(
+		"Processed", // name
+		false,       // durable
+		false,       // delete when unused
+		false,       // exclusive
+		false,       // no-wait
+		nil,         // arguments
+	)
+	failOnError(err, "Failed to declare a queue")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
 	msgs, err := ch.Consume(
 		q.Name, // queue
@@ -92,6 +107,18 @@ func main() {
 				fmt.Printf("client: could not read response body: %s\n", err)
 			}
 			fmt.Printf("client: response body: %s\n", resBody)
+
+			err = ch.PublishWithContext(ctx,
+				"",                 // exchange
+				queueResponse.Name, // routing key
+				false,              // mandatory
+				false,              // immediate
+				amqp.Publishing{
+					ContentType: "text/plain",
+					Body:        resBody,
+				})
+			failOnError(err, "Failed to publish a message")
+			log.Printf(" [x] Sent %s\n", resBody)
 		}
 	}()
 
