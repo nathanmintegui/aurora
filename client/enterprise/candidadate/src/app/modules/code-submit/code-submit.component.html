@@ -1,47 +1,57 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
 </head>
 <body>
 <div id="page-container">
-    <div id="question-container">
-        <h1>Quicksort Algorithm</h1>
-        <p><strong>Difficulty:</strong> Medium</p>
+  <div id="question-container">
+    <h1>Quicksort Algorithm</h1>
+    <p><strong>Difficulty:</strong> Medium</p>
 
-        <h2>Description</h2>
-        <p>
-            Implement the Quicksort algorithm to sort an array of integers in ascending order.
-            Your function should take an array as input and return a sorted array.
-        </p>
+    <h2>Description</h2>
+    <p>
+      Implement the Quicksort algorithm to sort an array of integers in ascending order.
+      Your function should take an array as input and return a sorted array.
+    </p>
 
-        <h2>Example</h2>
-        <pre>
+    <h2>Example</h2>
+    <pre>
         <strong>Input:</strong> [3, 6, 8, 10, 1, 2, 1]
         <strong>Output:</strong> [1, 1, 2, 3, 6, 8, 10]
         </pre>
 
-        <h2>Constraints</h2>
-        <ul>
-            <li>1 ≤ arr.length ≤ 10⁵</li>
-            <li>-10⁴ ≤ arr[i] ≤ 10⁴</li>
-        </ul>
+    <h2>Constraints</h2>
+    <ul>
+      <li>1 ≤ arr.length ≤ 10⁵</li>
+      <li>-10⁴ ≤ arr[i] ≤ 10⁴</li>
+    </ul>
 
-        <h2>Function Signature</h2>
-        <pre>
+    <h2>Function Signature</h2>
+    <pre>
         function quicksort(arr: number[]): number[]
         </pre>
-    </div>
+  </div>
 
-    <code-editor id="editor"
-                 [(ngModel)]="value"
-                 [languages]="languages"
-                 [language]="options.language">
-    </code-editor>
+  <div class="editor-container">
+    <div class="editor-area">
+      <p>Solução:</p>
+      <code-editor id="editor"
+                   [(ngModel)]="value"
+                   [languages]="languages"
+                   [language]="options.language"
+                   (ngModelChange)="log($event)">
+      </code-editor>
+    </div>
+    <div class="button-area">
+      <button class="submit-question-button">Enviar</button>
+      <button class="next-question-button">Próxima Questão</button>
+    </div>
+  </div>
 </div>
 </body>
 </html>

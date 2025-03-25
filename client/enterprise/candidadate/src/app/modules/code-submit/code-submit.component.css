@@ -1,7 +1,52 @@
+.editor-container {
+  width: 50%;
+  border-left: 1px solid black;
+}
+
+.editor-area {
+  height: 90%;
+}
+
+.editor-area > p {
+  border-bottom: 1px solid black;
+  padding: 0.5em 1em;
+  background-color: #e3e3e3;
+}
+
 #editor {
   font-size: 12px;
-  border-left: 1px solid black;
-  width: 50%;
+}
+
+.button-area {
+  height: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  padding-right: 2em;
+  gap: 2em;
+  border-top: 1px solid black;
+  background-color: #e3e3e3;
+}
+
+.submit-question-button {
+  background-color: limegreen;
+  color: black;
+  padding: 1em;
+  border-color: #2c3e50;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submit-question-button:hover {
+  opacity: 0.85;
+}
+
+.next-question-button {
+  color: black;
+  padding: 1em;
+  border-color: #2c3e50;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 #page-container {
