@@ -16,6 +16,15 @@ string connectionString = builder.Configuration["DbConnectionString"]
 builder.Services.AddScoped(_ => new DbSession(connectionString));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+builder.Services.AddCors(options => options.AddPolicy(name: "AngularUI",
+            policy =>
+            {
+                policy.WithOrigins("http://localhost:4200/")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowAnyOrigin();
+            }));
+
 DefaultTypeMap.MatchNamesWithUnderscores = true;
 
 WebApplication app = builder.Build();
@@ -25,6 +34,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseCors("AngularUI"); ;
 
 app.UseHttpsRedirection();
 
