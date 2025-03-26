@@ -1,6 +1,7 @@
 .editor-container {
   width: 50%;
   border-left: 1px solid black;
+  position: relative;
 }
 
 .editor-area {
@@ -15,6 +16,10 @@
 
 #editor {
   font-size: 12px;
+}
+
+button {
+  font-weight: bold;
 }
 
 .button-area {
@@ -39,6 +44,16 @@
 
 .submit-question-button:hover {
   opacity: 0.85;
+}
+
+.submitted-question-button {
+  background-color: limegreen;
+  opacity: 0.45;
+  color: black;
+  padding: 1em;
+  border-color: #2c3e50;
+  border-radius: 5px;
+  cursor: progress;
 }
 
 .next-question-button {

@@ -38,17 +38,24 @@
   </div>
 
   <div class="editor-container">
+    <app-loader></app-loader>
+
     <div class="editor-area">
-      <p>Solução:</p>
-      <code-editor id="editor"
-                   [(ngModel)]="value"
-                   [languages]="languages"
-                   [language]="options.language"
-                   (ngModelChange)="log($event)">
-      </code-editor>
+      <ng-container *ngIf="!loader?.isLoading">
+        <p><strong>Solução:</strong></p>
+        <code-editor id="editor"
+                     [(ngModel)]="value"
+                     [languages]="languages"
+                     [language]="options.language"
+                     (ngModelChange)="log($event)">
+        </code-editor>
+      </ng-container>
     </div>
+
     <div class="button-area">
-      <button class="submit-question-button">Enviar</button>
+      <button [ngClass]="!loader?.isLoading ? 'submit-question-button' : 'submitted-question-button'"
+              (click)="handleClick()">Enviar
+      </button>
       <button class="next-question-button">Próxima Questão</button>
     </div>
   </div>

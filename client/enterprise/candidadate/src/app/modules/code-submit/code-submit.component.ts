@@ -1,19 +1,26 @@
-import {Component, signal} from '@angular/core';
+import {Component, signal, ViewChild} from '@angular/core';
 import {CodeEditor} from "@acrodata/code-editor";
 import {FormsModule} from "@angular/forms";
 import {languages} from '@codemirror/language-data';
 import {HttpClient} from "@angular/common/http";
+import {LoaderComponent} from '../shared/components/loader/loader.component';
+import {NgClass, NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-code-submit',
   imports: [
     CodeEditor,
-    FormsModule
+    FormsModule,
+    LoaderComponent,
+    NgIf,
+    NgClass
   ],
   templateUrl: './code-submit.component.html',
   styleUrl: './code-submit.component.css'
 })
 export class CodeSubmitComponent {
+  @ViewChild(LoaderComponent) loader?: LoaderComponent;
+
   value =
     `function twoSum(nums, target) {
       const map = new Map();
@@ -52,6 +59,8 @@ module.exports = twoSum;
   }
 
   handleClick = () => {
+    this.loader?.showLoader(true);
+
     const body = {
       lang: 1,
       code: this.userCode()
@@ -70,6 +79,7 @@ module.exports = twoSum;
             eventSource.close();
           } else {
             console.log(data);
+            this.loader?.showLoader(false);
           }
         };
       }
