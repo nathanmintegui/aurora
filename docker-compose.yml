@@ -1,0 +1,37 @@
+services:
+  rabbitmq:
+    image: rabbitmq:4.0-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    restart: always
+
+  server:
+    build: ./server/.
+    ports:
+      - 8080:8080
+    network_mode: host
+
+  consumer:
+    build: ./consumers/http-consumer-v1/.
+    depends_on:
+      - rabbitmq
+    restart: always
+    network_mode: host
+
+  worker:
+    build: ./workers/http-worker-v1/.
+    ports:
+      - 4001:4001
+    restart: always
+    network_mode: host
+
+  notificator:
+    build: ./notificator/.
+    ports:
+      - 3001:3001
+    depends_on:
+      - rabbitmq
+    restart: always
+    network_mode: host
+
