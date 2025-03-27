@@ -10,31 +10,93 @@
 <body>
 <div id="page-container">
   <div id="question-container">
-    <h1>Quicksort Algorithm</h1>
-    <p><strong>Difficulty:</strong> Medium</p>
+    <div class="question-bar">
+      <div [ngClass]="(viewService.instructionViewActive$ | async) ? 'question-bar-active' : ''"
+           (click)="handleInstructionClick()">
+        <p>Instruções</p>
+      </div>
 
-    <h2>Description</h2>
-    <p>
-      Implement the Quicksort algorithm to sort an array of integers in ascending order.
-      Your function should take an array as input and return a sorted array.
-    </p>
+      <div [ngClass]="!(viewService.instructionViewActive$ | async) ? 'question-bar-active' : ''"
+           (click)="handleOutputClick()">
+        <p>Output</p>
+      </div>
+    </div>
 
-    <h2>Example</h2>
-    <pre>
+    <ng-container *ngIf="viewService.instructionViewActive$ | async; else elseBlock">
+      <div class="question-content">
+        <h1>Quicksort Algorithm</h1>
+        <p><strong>Difficulty:</strong> Medium</p>
+
+        <h2>Description</h2>
+        <p>
+          Implement the Quicksort algorithm to sort an array of integers in ascending order.
+          Your function should take an array as input and return a sorted array.
+        </p>
+
+        <h2>Example</h2>
+        <pre>
         <strong>Input:</strong> [3, 6, 8, 10, 1, 2, 1]
         <strong>Output:</strong> [1, 1, 2, 3, 6, 8, 10]
         </pre>
 
-    <h2>Constraints</h2>
-    <ul>
-      <li>1 ≤ arr.length ≤ 10⁵</li>
-      <li>-10⁴ ≤ arr[i] ≤ 10⁴</li>
-    </ul>
+        <h2>Constraints</h2>
+        <ul>
+          <li>1 ≤ arr.length ≤ 10⁵</li>
+          <li>-10⁴ ≤ arr[i] ≤ 10⁴</li>
+        </ul>
 
-    <h2>Function Signature</h2>
-    <pre>
+        <h2>Function Signature</h2>
+        <pre>
         function quicksort(arr: number[]): number[]
         </pre>
+      </div>
+    </ng-container>
+
+    <ng-template #elseBlock>
+      <div class="output-container">
+        <div class="output-status-bar">
+          <div>
+            <p>Time: 509ms</p>
+          </div>
+          <div>
+            <p>Passed: {{ sucessTestCount }}</p>
+          </div>
+          <div>
+            <p>Failed: {{ errorTestCount }}</p>
+          </div>
+          <div>
+            <p>Exit Code: 0</p>
+          </div>
+        </div>
+        <div class="output-content">
+          <div class="test-result">
+            <div class="status-bar"></div>
+            <p>Test Results:</p>
+          </div>
+
+          <div>
+            @for (test of responseContent?.message; track test?.title) {
+              @if (test.failure === EMPTY_STRING) {
+                <div class="sucess-test-container">
+                  <div class="checkmark-circle">
+                    <div class="checkmark"></div>
+                  </div>
+                  <p>{{ test?.title }}</p>
+                </div>
+              } @else {
+                <div class="error-test-container">
+                  <div class="checkmark-circle error">
+                    <div class="checkmark"></div>
+                  </div>
+                  <p>{{ test?.title }}</p>
+                  <p>{{ test?.failure }}</p>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      </div>
+    </ng-template>
   </div>
 
   <div class="editor-container">

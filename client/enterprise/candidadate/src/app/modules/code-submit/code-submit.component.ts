@@ -4,7 +4,8 @@ import {FormsModule} from "@angular/forms";
 import {languages} from '@codemirror/language-data';
 import {HttpClient} from "@angular/common/http";
 import {LoaderComponent} from '../shared/components/loader/loader.component';
-import {NgClass, NgIf} from '@angular/common';
+import {AsyncPipe, NgClass, NgIf} from '@angular/common';
+import {ViewService} from './view.service';
 
 @Component({
   selector: 'app-code-submit',
@@ -13,13 +14,21 @@ import {NgClass, NgIf} from '@angular/common';
     FormsModule,
     LoaderComponent,
     NgIf,
-    NgClass
+    NgClass,
+    AsyncPipe
   ],
   templateUrl: './code-submit.component.html',
   styleUrl: './code-submit.component.css'
 })
 export class CodeSubmitComponent {
   @ViewChild(LoaderComponent) loader?: LoaderComponent;
+
+  EMPTY_STRING: string = "" as const;
+
+  sucessTestCount = 0;
+  errorTestCount = 0;
+
+  responseContent: any = {};
 
   value =
     `function twoSum(nums, target) {
@@ -51,7 +60,9 @@ module.exports = twoSum;
   };
   userCode = signal('');
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    protected viewService: ViewService) {
   }
 
   log(e: any) {
@@ -67,22 +78,56 @@ module.exports = twoSum;
     };
 
     this.http.post('http://localhost:5002/questions/5353aedc-c178-4677-a9dd-53cb2644a078/submit', body, {
-      headers: {
-        "Content-Type": "application/json",
-      }
-    }).subscribe((res) => {
-      if (res === null) {
-        const eventSource = new EventSource('http://localhost:3001/events');
-        eventSource.onmessage = (event) => {
-          const {type, data} = JSON.parse(event.data);
-          if (type === 'close') {
-            eventSource.close();
-          } else {
-            console.log(data);
-            this.loader?.showLoader(false);
-          }
-        };
+      headers: {"Content-Type": "application/json"}
+    }).subscribe({
+      next: (res) => {
+        if (res === null) {
+          this.setupSSE();
+        } else {
+          this.loader?.showLoader(false);
+        }
+      },
+      error: (error) => {
+        console.error("[ERROR]: HTTP Error:", error);
+        this.loader?.showLoader(false);
       }
     });
+  };
+
+  setupSSE = () => {
+    const eventSource = new EventSource('http://localhost:3001/events');
+
+    eventSource.onmessage = (event) => {
+      if (!event?.data) {
+        console.error("[ERROR]: Error receiving message data.");
+        return;
+      }
+
+      this.responseContent = JSON.parse(event.data);
+      console.log("[DEBUG]: SSE message ", this.responseContent);
+
+      // @ts-ignore
+      this.sucessTestCount = this.responseContent?.message.filter(m => m?.failure === "").length;
+      // @ts-ignore
+      this.errorTestCount = this.responseContent?.message.filter(m => m?.failure !== "").length;
+
+      this.loader?.showLoader(false);
+      this.handleOutputClick();
+      eventSource.close();
+    };
+
+    eventSource.onerror = (error) => {
+      console.error("[ERROR]: SSE Error:", error);
+      this.loader?.showLoader(false);
+      eventSource.close();
+    };
+  };
+
+  handleInstructionClick(): void {
+    this.viewService.setInstructionView(true);
+  }
+
+  handleOutputClick(): void {
+    this.viewService.setInstructionView(false);
   }
 }

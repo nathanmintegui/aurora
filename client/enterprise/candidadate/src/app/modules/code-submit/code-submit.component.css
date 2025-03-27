@@ -75,7 +75,59 @@ button {
   display: flex;
   flex-direction: column;
   align-items: start;
-  padding: 1.5em 0 0 1.5em;
+}
+
+.question-bar {
+  display: flex;
+  border-bottom: 1px solid #2c3e50;
+  width: 100%;
+  background-color: #e3e3e3;
+}
+
+.question-bar > div {
+  cursor: pointer;
+}
+
+.question-bar-active {
+  background-color: #ecf0f1;
+}
+
+.question-bar > div > p {
+  padding: 0.5em 1em;
+  font-weight: bold;
+}
+
+.question-content {
+  padding: 0 1.5em;
+  height: 90%;
+}
+
+.output-container {
+  width: 100%;
+}
+
+.output-status-bar {
+  display: flex;
+  gap: 1em;
+  padding: 0.3em 0 0.3em 1em;
+  border-bottom: 1px solid #2c3e50;
+}
+
+.output-content {
+}
+
+.test-result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 1em;
+}
+
+.status-bar {
+  width: 5px;
+  height: 20px;
+  border-radius: 3px;
+  background-color: green;
 }
 
 h1 {
@@ -124,4 +176,57 @@ button#run-code:hover {
   font-size: 18px;
   font-weight: bold;
   color: #27ae60;
+}
+
+.sucess-test-container {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  padding-left: 3em;
+  padding-bottom: 0.5em;
+}
+
+.sucess-test-container > p {
+  color: green;
+}
+
+.checkmark-circle {
+  width: 20px;
+  height: 20px;
+  background-color: green;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/*
+ * =====================================================================================================================
+ * Error
+ * =====================================================================================================================
+ */
+.error {
+  background-color: red;
+}
+
+.error-test-container {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  padding-left: 3em;
+  padding-bottom: 0.5em;
+}
+
+.error-test-container > p {
+  color: red;
+}
+
+.checkmark {
+  width: 5px;
+  height: 10px;
+  border-bottom: 2px solid black;
+  border-right: 2px solid black;
+  transform: rotate(45deg);
+  position: absolute;
 }
