@@ -3,7 +3,11 @@ using Dapper;
 using Server.Database;
 using Server.Modules.Questions.Infrastructure;
 
+using Services;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Host.SerilogConfiguration();
 
 // Add services to the container.
 

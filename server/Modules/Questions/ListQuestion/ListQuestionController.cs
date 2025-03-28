@@ -7,16 +7,11 @@ namespace Server.Modules.Questions.ListQuestion;
 
 [ApiController]
 [Route("questions")]
-public class ListQuestionController(
-        ILogger<ListQuestionController> logger,
-        IQuestionRepository questionRepository
-) : ControllerBase
+public class ListQuestionController(IQuestionRepository questionRepository) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> List()
     {
-        logger.LogInformation("{Time} | GET /questions", DateTime.Now.ToString("HH:mm:ss"));
-
         List<Question> questions = await questionRepository.GetAsync();
         if (!questions.Any())
         {
@@ -26,6 +21,29 @@ public class ListQuestionController(
         List<QuestionResponse> response = questions
             .Select(q => new QuestionResponse(q.PublicId.Value, q.Complexity.Description, q.Content))
             .ToList();
+
+        return Ok(response);
+    }
+
+    [HttpGet]
+    [Route("{id:guid}")]
+    public async Task<IActionResult> GetBydId(Guid id)
+    {
+        if (id == Guid.Empty)
+        {
+            return BadRequest("Question ID cannot be empty.");
+        }
+
+        Question? question = await questionRepository.GetByIdAsync(id);
+        if (question is null)
+        {
+            return NotFound($"Question with ID {id} was not found.");
+        }
+
+        QuestionResponse response = new QuestionResponse(
+                question.PublicId.Value,
+                question.Complexity.Description,
+                question.Content);
 
         return Ok(response);
     }
