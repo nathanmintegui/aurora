@@ -21,8 +21,6 @@ public class SubmitQuestionController(ILogger<SubmitQuestionController> logger) 
     [Route("{questionId:guid}/submit")]
     public async Task<IActionResult> Submit([FromRoute] Guid questionId, [FromBody] SubmitQuestionRequest request)
     {
-        logger.LogInformation("{Time} | POST /questions/submit", DateTime.Now.ToString("HH:mm:ss"));
-
         /*
          * NOTE: Should also retrieve the user ID by token or other way of auth.
          * */

@@ -22,9 +22,6 @@ public class CreateQuestionController(
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateQuestionRequest request)
     {
-        logger.LogInformation("{Time} | POST /questions", DateTime.Now.ToString("HH:mm:ss"));
-
-
         List<ValidationResult> resultadoValidacao = new();
         ValidationContext contexto = new(request, null, null);
         Validator.TryValidateObject(request, contexto, resultadoValidacao, true);
@@ -62,3 +59,4 @@ public class CreateQuestionController(
         return Created();
     }
 }
+
