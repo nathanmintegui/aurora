@@ -8,6 +8,7 @@ namespace Server.Modules.Questions.Infrastructure;
 public interface IQuestionRepository
 {
     Task AddAsync(Question question);
+    Task<List<Question>> GetAsync();
 }
 
 public sealed class QuestionRepository(DbSession session) : IQuestionRepository
@@ -25,4 +26,31 @@ public sealed class QuestionRepository(DbSession session) : IQuestionRepository
 
         question.Id = QuestionId.Create(id);
     }
+
+    public async Task<List<Question>> GetAsync()
+    {
+        const string query = """
+                                select
+                                    id,
+                                    public_id,
+                                    question_complexity_id,
+                                    content,
+                                    created_at,
+                                    updated_at
+                                from questions
+                                order by id;
+                             """;
+
+        IEnumerable<QuestionSnapshot> results = await session.Connection.QueryAsync<QuestionSnapshot>(query);
+
+        if (!results.Any())
+        {
+            return [];
+        }
+
+        return results
+            .Select(row => QuestionSnapshot.ToModel(row))
+            .ToList();
+    }
 }
+

@@ -1,6 +1,7 @@
 using Dapper;
 
 using Server.Database;
+using Server.Modules.Questions.Infrastructure;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,7 @@ string connectionString = builder.Configuration["DbConnectionString"]
 
 builder.Services.AddScoped(_ => new DbSession(connectionString));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 
 builder.Services.AddCors(options => options.AddPolicy(name: "AngularUI",
             policy =>
@@ -35,7 +37,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseCors("AngularUI"); ;
+app.UseCors("AngularUI");
 
 app.UseHttpsRedirection();
 

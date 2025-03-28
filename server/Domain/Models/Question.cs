@@ -1,3 +1,7 @@
+using System.Diagnostics;
+
+using Server.Domain.Models.Shared;
+
 namespace Server.Domain.Models;
 
 public class Question
@@ -35,6 +39,26 @@ public class Question
         return question;
     }
 
+    public static Question Create(QuestionSnapshot snapshot)
+    {
+        Debug.Assert(snapshot is not null);
+
+        QuestionId id = QuestionId.Create(snapshot.Id);
+        PublicQuestionId publicId = PublicQuestionId.Create(snapshot.PublicId);
+        Result<Complexity> complexityResult = Complexity.FromId(snapshot.QuestionComplexityId);
+        NonEmptyString content = new NonEmptyString(snapshot.Content);
+
+        Question question = new(
+                id,
+                publicId,
+                complexityResult.Value,
+                content,
+                snapshot.CreatedAt,
+                snapshot.UpdatedAt);
+
+        return question;
+    }
+
     public QuestionId Id { get; internal set; }
     public PublicQuestionId PublicId { get; internal set; }
     public Complexity Complexity { get; }
@@ -62,3 +86,4 @@ public record struct PublicQuestionId(Guid Value)
         return new PublicQuestionId(value);
     }
 }
+
