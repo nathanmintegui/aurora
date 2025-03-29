@@ -1,4 +1,4 @@
-import {Component, signal, ViewChild} from '@angular/core';
+import {Component, OnInit, signal, ViewChild} from '@angular/core';
 import {CodeEditor} from "@acrodata/code-editor";
 import {FormsModule} from "@angular/forms";
 import {languages} from '@codemirror/language-data';
@@ -6,6 +6,12 @@ import {HttpClient} from "@angular/common/http";
 import {LoaderComponent} from '../shared/components/loader/loader.component';
 import {AsyncPipe, NgClass, NgIf} from '@angular/common';
 import {ViewService} from './view.service';
+import {QuestionResponse} from '../../core/models/QuestionResponse';
+
+type SelectedQuestion = {
+  label: number;
+  questionId: string
+}
 
 @Component({
   selector: 'app-code-submit',
@@ -20,7 +26,7 @@ import {ViewService} from './view.service';
   templateUrl: './code-submit.component.html',
   styleUrl: './code-submit.component.css'
 })
-export class CodeSubmitComponent {
+export class CodeSubmitComponent implements OnInit {
   @ViewChild(LoaderComponent) loader?: LoaderComponent;
 
   EMPTY_STRING: string = "" as const;
@@ -60,9 +66,38 @@ module.exports = twoSum;
   };
   userCode = signal('');
 
+  questionList: Array<QuestionResponse> = [];
+  currentSelectedQuestion: SelectedQuestion = {label: 1, questionId: this.EMPTY_STRING};
+  currentQuestion: QuestionResponse = {
+    id: this.EMPTY_STRING,
+    content: this.EMPTY_STRING,
+    complexity: this.EMPTY_STRING
+  };
+  questions: Array<SelectedQuestion> = [];
+
   constructor(
     private http: HttpClient,
     protected viewService: ViewService) {
+  }
+
+  ngOnInit(): void {
+    this.http.get<Array<QuestionResponse>>("http://localhost:5002/questions")
+      .subscribe({
+        next: (res) => {
+          this.currentQuestion = res[0];
+          this.questionList = res;
+          this.currentSelectedQuestion = {label: 1, questionId: res[0]?.id};
+          this.questions = res.map((q, idx) => {
+            return {
+              label: idx + 1,
+              questionId: q.id
+            }
+          });
+        },
+        error: (err) => {
+          console.error('[ERROR]: fetching resource, ', err);
+        }
+      })
   }
 
   log(e: any) {
@@ -129,5 +164,26 @@ module.exports = twoSum;
 
   handleOutputClick(): void {
     this.viewService.setInstructionView(false);
+  }
+
+  handleChangeQuestionClick(number: number) {
+    console.log("[DEBUG]: current question ", number)
+
+    const questionId = this.questions.find(question => question.label === number)?.questionId;
+    if (!questionId) {
+      console.error("[ERROR]: (handleChangeQuestionClick) >> no question id found");
+    }
+
+    this.http.get<QuestionResponse>(`http://localhost:5002/questions/${questionId}`)
+      .subscribe({
+        next: (res) => {
+          console.log('[DEBUG]: (handleChangeQuestionClick) http response >> ', res)
+          this.currentQuestion = res;
+          this.currentSelectedQuestion = {label: number, questionId: res.id};
+        },
+        error: (err) => {
+          console.error('[ERROR]: fetching resource on (handleChangeQuestionClick) >> ', err);
+        }
+      })
   }
 }

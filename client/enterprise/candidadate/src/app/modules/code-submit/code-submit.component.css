@@ -68,6 +68,51 @@ button {
   width: 100%;
   height: 100vh;
   display: flex;
+  flex-direction: column;
+}
+
+/*
+ * =====================================================================================================================
+ * Navigation Menu
+ * =====================================================================================================================
+ */
+.navigation-menu-container {
+  border-bottom: 1px solid black;
+  display: flex;
+  padding: 0.5em;
+}
+
+/* Question Circles */
+.question-circle-container {
+  display: flex;
+  gap: 1.5em;
+}
+
+.question-circle-container > span {
+  border: 2px solid black;
+  border-radius: 50%;
+  width: 2em;
+  height: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-weight: bold;
+}
+
+.question-circle-container > span:hover {
+  cursor: pointer;
+  background-color: lightgray;
+}
+
+.current-selected-question {
+  background-color: lightgray;
+}
+
+.code-area {
+  width: 100%;
+  height: 100vh;
+  display: flex;
 }
 
 #question-container {
