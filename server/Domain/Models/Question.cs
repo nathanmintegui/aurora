@@ -4,7 +4,7 @@ using Server.Domain.Models.Shared;
 
 namespace Server.Domain.Models;
 
-public class Question
+public sealed class Question
 {
 #pragma warning disable CS8618, CS9264
     private Question() { }
@@ -24,6 +24,7 @@ public class Question
         Content = content;
         CreatedAt = createdAt;
         UpdatedAt = updatedAt;
+        CodeQuestionScaffolds = [];
     }
 
     public static Question Create(NonEmptyString Content, Complexity Complexity)
@@ -46,15 +47,15 @@ public class Question
         QuestionId id = QuestionId.Create(snapshot.Id);
         PublicQuestionId publicId = PublicQuestionId.Create(snapshot.PublicId);
         Result<Complexity> complexityResult = Complexity.FromId(snapshot.QuestionComplexityId);
-        NonEmptyString content = new NonEmptyString(snapshot.Content);
+        NonEmptyString content = new(snapshot.Content);
 
         Question question = new(
-                id,
-                publicId,
-                complexityResult.Value,
-                content,
-                snapshot.CreatedAt,
-                snapshot.UpdatedAt);
+            id,
+            publicId,
+            complexityResult.Value,
+            content,
+            snapshot.CreatedAt,
+            snapshot.UpdatedAt);
 
         return question;
     }
@@ -65,6 +66,8 @@ public class Question
     public string Content { get; }
     public DateTime CreatedAt { get; }
     public DateTime UpdatedAt { get; }
+
+    public List<CodeQuestionScaffold> CodeQuestionScaffolds { get; private set; }
 }
 
 public record struct QuestionId(int Value)
@@ -86,4 +89,3 @@ public record struct PublicQuestionId(Guid Value)
         return new PublicQuestionId(value);
     }
 }
-

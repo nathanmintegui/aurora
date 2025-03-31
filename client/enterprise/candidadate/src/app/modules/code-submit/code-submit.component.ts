@@ -1,16 +1,24 @@
-import {Component, OnInit, signal, ViewChild} from '@angular/core';
-import {CodeEditor} from "@acrodata/code-editor";
-import {FormsModule} from "@angular/forms";
-import {languages} from '@codemirror/language-data';
-import {HttpClient} from "@angular/common/http";
-import {LoaderComponent} from '../shared/components/loader/loader.component';
-import {AsyncPipe, NgClass, NgIf} from '@angular/common';
-import {ViewService} from './view.service';
-import {QuestionResponse} from '../../core/models/QuestionResponse';
+import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { CodeEditor } from "@acrodata/code-editor";
+import { FormsModule } from "@angular/forms";
+import { languages } from '@codemirror/language-data';
+import { HttpClient } from "@angular/common/http";
+import { LoaderComponent } from '../shared/components/loader/loader.component';
+import { AsyncPipe, NgClass, NgIf } from '@angular/common';
+import { ViewService } from './view.service';
+import { QuestionResponseType } from '../../core/models/QuestionResponseType';
 
 type SelectedQuestion = {
   label: number;
   questionId: string
+}
+
+export type CurrentQuestionType = {
+  id: string;
+  complexity: string;
+  content: string;
+  code: string;
+  langId: number;
 }
 
 @Component({
@@ -36,21 +44,6 @@ export class CodeSubmitComponent implements OnInit {
 
   responseContent: any = {};
 
-  value =
-    `function twoSum(nums, target) {
-      const map = new Map();
-      for (let i = 0; i < nums.length; i++) {
-          const complement = target - nums[i];
-          if (map.has(complement)) {
-              return [map.get(complement), i];
-          }
-          map.set(nums[i], i);
-      }
-      return [];
-    }
-
-module.exports = twoSum;
-`;
   languages = languages
   options: any = {
     language: 'javascript',
@@ -66,12 +59,14 @@ module.exports = twoSum;
   };
   userCode = signal('');
 
-  questionList: Array<QuestionResponse> = [];
-  currentSelectedQuestion: SelectedQuestion = {label: 1, questionId: this.EMPTY_STRING};
-  currentQuestion: QuestionResponse = {
+  questionList: Array<QuestionResponseType> = [];
+  currentSelectedQuestion: SelectedQuestion = { label: 1, questionId: this.EMPTY_STRING };
+  currentQuestion: CurrentQuestionType = {
     id: this.EMPTY_STRING,
     content: this.EMPTY_STRING,
-    complexity: this.EMPTY_STRING
+    complexity: this.EMPTY_STRING,
+    code: this.EMPTY_STRING,
+    langId: -1
   };
   questions: Array<SelectedQuestion> = [];
 
@@ -81,12 +76,18 @@ module.exports = twoSum;
   }
 
   ngOnInit(): void {
-    this.http.get<Array<QuestionResponse>>("http://localhost:5002/questions")
+    this.http.get<Array<QuestionResponseType>>("http://localhost:5002/questions")
       .subscribe({
         next: (res) => {
-          this.currentQuestion = res[0];
+          this.currentQuestion = {
+            id: res[0].id,
+            complexity: res[0].complexity,
+            content: res[0].content,
+            code: res[0]?.codeScaffold[0]?.code,
+            langId: res[0]?.codeScaffold[0]?.id
+          }
           this.questionList = res;
-          this.currentSelectedQuestion = {label: 1, questionId: res[0]?.id};
+          this.currentSelectedQuestion = { label: 1, questionId: res[0]?.id };
           this.questions = res.map((q, idx) => {
             return {
               label: idx + 1,
@@ -108,12 +109,12 @@ module.exports = twoSum;
     this.loader?.showLoader(true);
 
     const body = {
-      lang: 1,
+      lang: this.currentQuestion.langId,
       code: this.userCode()
     };
 
-    this.http.post('http://localhost:5002/questions/5353aedc-c178-4677-a9dd-53cb2644a078/submit', body, {
-      headers: {"Content-Type": "application/json"}
+    this.http.post(`http://localhost:5002/questions/${this.currentQuestion.id}/submit`, body, {
+      headers: { "Content-Type": "application/json" }
     }).subscribe({
       next: (res) => {
         if (res === null) {
@@ -174,12 +175,18 @@ module.exports = twoSum;
       console.error("[ERROR]: (handleChangeQuestionClick) >> no question id found");
     }
 
-    this.http.get<QuestionResponse>(`http://localhost:5002/questions/${questionId}`)
+    this.http.get<QuestionResponseType>(`http://localhost:5002/questions/${questionId}`)
       .subscribe({
         next: (res) => {
           console.log('[DEBUG]: (handleChangeQuestionClick) http response >> ', res)
-          this.currentQuestion = res;
-          this.currentSelectedQuestion = {label: number, questionId: res.id};
+          this.currentQuestion = {
+            id: res.id,
+            complexity: res.complexity,
+            content: res.content,
+            code: res.codeScaffold[0].code,
+            langId: res.codeScaffold[0].id
+          }
+          this.currentSelectedQuestion = { label: number, questionId: res.id };
         },
         error: (err) => {
           console.error('[ERROR]: fetching resource on (handleChangeQuestionClick) >> ', err);

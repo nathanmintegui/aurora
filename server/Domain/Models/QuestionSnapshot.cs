@@ -7,9 +7,11 @@ public sealed class QuestionSnapshot
     public int Id { get; init; }
     public Guid PublicId { get; init; }
     public int QuestionComplexityId { get; init; }
-    public string Content { get; init; } = String.Empty;
+    public string Content { get; init; } = string.Empty;
     public DateTime CreatedAt { get; init; }
     public DateTime UpdatedAt { get; init; }
+
+    public List<CodeQuestionScaffoldSnapshot> CodeQuestionScaffolds { get; init; } = [];
 
     public static QuestionSnapshot From(Question question)
     {
@@ -25,4 +27,3 @@ public sealed class QuestionSnapshot
         return question;
     }
 }
-

@@ -21,8 +21,8 @@ create index idx_question_complexity_id on question_complexity (id);
 create table langs
 (
     id           integer generated always as identity primary key,
-    name         varchar not null unique check (length(name) > 1),
-    abbreviation varchar not null unique check (length(abbreviation) > 1)
+    name         varchar not null unique,
+    abbreviation varchar not null unique
 );
 create index idx_langs_id on langs (id);
 
@@ -43,9 +43,9 @@ create index idx_questions_public_id on questions (public_id);
 create table code_question_scaffold
 (
     id          integer generated always as identity primary key,
-    question_id int   not null references questions (id),
-    code        jsonb not null,
-    lang_id     int   not null references langs (id)
+    question_id int     not null references questions (id),
+    code        varchar not null,
+    lang_id     int     not null references langs (id)
 );
 
 

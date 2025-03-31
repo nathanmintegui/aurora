@@ -8,12 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Dapper" Version="2.1.66" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="Npgsql" Version="9.0.3" />
-        <PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
-        <PackageReference Include="Serilog.AspnetCore" Version="9.0.0" />
+        <PackageReference Include="Dapper" Version="2.1.66"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+        <PackageReference Include="Npgsql" Version="9.0.3"/>
+        <PackageReference Include="RabbitMQ.Client" Version="7.1.2"/>
+        <PackageReference Include="Serilog.AspnetCore" Version="9.0.0"/>
         <PackageReference Include="SonarAnalyzer.CSharp" Version="10.7.0.110445">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Database\" />
+        <Folder Include="Database\"/>
     </ItemGroup>
 
 </Project>

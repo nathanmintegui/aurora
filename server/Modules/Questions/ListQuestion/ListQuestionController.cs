@@ -13,13 +13,19 @@ public class ListQuestionController(IQuestionRepository questionRepository) : Co
     public async Task<IActionResult> List()
     {
         List<Question> questions = await questionRepository.GetAsync();
-        if (!questions.Any())
+        if (questions.Count == 0)
         {
             return Ok(Enumerable.Empty<string>());
         }
 
         List<QuestionResponse> response = questions
-            .Select(q => new QuestionResponse(q.PublicId.Value, q.Complexity.Description, q.Content))
+            .Select(q => new QuestionResponse(
+                q.PublicId.Value,
+                q.Complexity.Description,
+                q.Content,
+                q.CodeQuestionScaffolds
+                    .Select(cqs => new CodeScaffoldResponse(cqs.Id, cqs.Code, cqs.Lang.Name))
+                    .ToList()))
             .ToList();
 
         return Ok(response);
@@ -40,12 +46,14 @@ public class ListQuestionController(IQuestionRepository questionRepository) : Co
             return NotFound($"Question with ID {id} was not found.");
         }
 
-        QuestionResponse response = new QuestionResponse(
-                question.PublicId.Value,
-                question.Complexity.Description,
-                question.Content);
+        QuestionResponse response = new(
+            question.PublicId.Value,
+            question.Complexity.Description,
+            question.Content,
+            question.CodeQuestionScaffolds
+                .Select(cqs => new CodeScaffoldResponse(cqs.Id, cqs.Code, cqs.Lang.Name))
+                .ToList());
 
         return Ok(response);
     }
 }
-

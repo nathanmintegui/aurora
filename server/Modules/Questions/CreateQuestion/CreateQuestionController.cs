@@ -59,4 +59,3 @@ public class CreateQuestionController(
         return Created();
     }
 }
-

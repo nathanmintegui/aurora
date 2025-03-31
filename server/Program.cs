@@ -22,14 +22,14 @@ builder.Services.AddScoped(_ => new DbSession(connectionString));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 
-builder.Services.AddCors(options => options.AddPolicy(name: "AngularUI",
-            policy =>
-            {
-                policy.WithOrigins("http://localhost:4200/")
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowAnyOrigin();
-            }));
+builder.Services.AddCors(options => options.AddPolicy("AngularUI",
+    policy =>
+    {
+        policy.WithOrigins("http://localhost:4200/")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowAnyOrigin();
+    }));
 
 DefaultTypeMap.MatchNamesWithUnderscores = true;
 

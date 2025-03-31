@@ -91,7 +91,7 @@
         <ng-container *ngIf="!loader?.isLoading">
           <p><strong>Solução:</strong></p>
           <code-editor id="editor"
-                       [(ngModel)]="value"
+                       [(ngModel)]="currentQuestion.code"
                        [languages]="languages"
                        [language]="options.language"
                        (ngModelChange)="log($event)">
