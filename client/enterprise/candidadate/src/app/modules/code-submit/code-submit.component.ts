@@ -1,12 +1,13 @@
 import { Component, OnInit, signal, ViewChild } from '@angular/core';
-import { CodeEditor } from "@acrodata/code-editor";
-import { FormsModule } from "@angular/forms";
+import { CodeEditor, Theme } from "@acrodata/code-editor";
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { languages } from '@codemirror/language-data';
 import { HttpClient } from "@angular/common/http";
 import { LoaderComponent } from '../shared/components/loader/loader.component';
-import { AsyncPipe, NgClass, NgIf } from '@angular/common';
+import { AsyncPipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { ViewService } from './view.service';
 import { QuestionResponseType } from '../../core/models/QuestionResponseType';
+import { vim } from '@replit/codemirror-vim';
 
 type SelectedQuestion = {
   label: number;
@@ -29,13 +30,21 @@ export type CurrentQuestionType = {
     LoaderComponent,
     NgIf,
     NgClass,
-    AsyncPipe
+    AsyncPipe,
+    ReactiveFormsModule,
+    NgFor
   ],
   templateUrl: './code-submit.component.html',
   styleUrl: './code-submit.component.css'
 })
 export class CodeSubmitComponent implements OnInit {
   @ViewChild(LoaderComponent) loader?: LoaderComponent;
+
+  editorConfigForm = new FormGroup({
+    lang: new FormControl('Javascript'),
+    fontSize: new FormControl('12'),
+    theme: new FormControl('light'),
+  })
 
   EMPTY_STRING: string = "" as const;
 
@@ -56,8 +65,13 @@ export class CodeSubmitComponent implements OnInit {
     indentUnit: '',
     lineWrapping: false,
     highlightWhitespace: false,
+    extensions: [
+      vim()
+    ]
   };
-  userCode = signal('');
+
+  langs = ["Javascript", "C", "C++", "Python", "PHP", "Java"]
+  fontSizes = [12, 14, 16, 18, 20, 22, 24, 26, 28, 30]
 
   questionList: Array<QuestionResponseType> = [];
   currentSelectedQuestion: SelectedQuestion = { label: 1, questionId: this.EMPTY_STRING };
@@ -69,6 +83,11 @@ export class CodeSubmitComponent implements OnInit {
     langId: -1
   };
   questions: Array<SelectedQuestion> = [];
+  selectedLang: string = 'Javascript';
+  themes: string[] = ['light', 'dark'];
+  selectedTheme: Theme = 'light'
+
+  userCode = signal('');
 
   constructor(
     private http: HttpClient,
@@ -196,5 +215,54 @@ export class CodeSubmitComponent implements OnInit {
           console.error('[ERROR]: fetching resource on (handleChangeQuestionClick) >> ', err);
         }
       })
+  }
+
+  onChangeLang(newValue: string) {
+    console.assert(newValue !== this.EMPTY_STRING)
+    this.selectedLang = newValue
+    this.changeCurrentCodeTemplateLang(newValue)
+  }
+
+  changeCurrentCodeTemplateLang(newLang: string) {
+    console.assert(newLang !== this.EMPTY_STRING)
+
+    /*
+     * NOTE: In case of multiple places usage then please consider moving it to a different place/location, like a
+     * constant file or top class.
+     * */
+    const LANG_MAP = [
+      { id: 1, value: 'Javascript' },
+      { id: 2, value: 'Java' },
+      { id: 3, value: 'Python' }
+    ] as const;
+
+    if (!this.langs.find(l => l === newLang)) {
+      console.error('[ERROR]: could not find corresponding lang on list of acceptable langs.');
+    }
+
+    const codeQuestion = this.questionList.find(q => q.id === this.currentQuestion.id)?.codeScaffold;
+    if (!codeQuestion) {
+      console.error('[ERROR]: did not find question with current question ID >>', this.currentQuestion.id);
+      return;
+    }
+
+    const desiredLang = LANG_MAP.find(l => l.value === newLang);
+    if (!desiredLang) {
+      console.error('[ERROR]: did not find lang with provided name >>', newLang);
+      return;
+    }
+
+    const codeScaffold = codeQuestion.find(c => c.lang === desiredLang.value);
+    if (!codeScaffold) {
+      console.error('[ERROR]: did not find a code scaffold with lang ID >>', desiredLang.id);
+      return;
+    }
+
+    this.currentQuestion = { ...this.currentQuestion, langId: desiredLang.id, code: codeScaffold.code }
+  }
+
+  onChangeTheme(newValue: Theme) {
+    console.assert(newValue !== this.EMPTY_STRING)
+    this.selectedTheme = newValue
   }
 }

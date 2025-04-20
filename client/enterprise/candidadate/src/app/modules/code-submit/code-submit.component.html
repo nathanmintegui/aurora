@@ -90,10 +90,31 @@
       <div class="editor-area">
         <ng-container *ngIf="!loader?.isLoading">
           <p><strong>Solução:</strong></p>
-          <code-editor id="editor"
+          <form [formGroup]="editorConfigForm">
+            <label for="lang">
+              <select formControlName="lang" (ngModelChange)="onChangeLang($event)" name="lang">
+                <option [value]="lang" *ngFor="let lang of langs">{{lang}}</option>
+              </select>
+            </label>
+
+            <label for="fontSize">
+              <select formControlName="fontSize" name="fontSize">
+                <option [value]="size" *ngFor="let size of fontSizes">{{size}}</option>
+              </select>
+            </label>
+
+            <label for="theme">
+              <select formControlName="theme" (ngModelChange)="onChangeTheme($event)" name="theme">
+                <option [value]="theme" *ngFor="let theme of themes">{{theme}}</option>
+              </select>
+            </label>
+          </form>
+          <code-editor id="editor" [style.font-size.px]="editorConfigForm.get('fontSize')?.value"
                        [(ngModel)]="currentQuestion.code"
                        [languages]="languages"
-                       [language]="options.language"
+                       [language]="selectedLang"
+                       [extensions]="options.extensions"
+                       [theme]="selectedTheme"
                        (ngModelChange)="log($event)">
           </code-editor>
         </ng-container>

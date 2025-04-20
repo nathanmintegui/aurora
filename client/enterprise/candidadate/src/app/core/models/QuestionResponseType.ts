@@ -8,5 +8,5 @@ export type QuestionResponseType = {
 export type CodeScaffoldType = {
   id: number;
   code: string;
-  lang: number;
+  lang: string;
 }

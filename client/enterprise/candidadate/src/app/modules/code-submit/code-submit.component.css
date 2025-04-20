@@ -275,3 +275,19 @@ button#run-code:hover {
   transform: rotate(45deg);
   position: absolute;
 }
+
+/*
+ * =====================================================================================================================
+ * Code Config Forms
+ * =====================================================================================================================
+ */
+form {
+  display: flex;
+  border-bottom: 1px solid gray;
+  background-color: #e3e3e3;
+}
+
+form > label > select {
+  padding: 0 1em;
+}
+
