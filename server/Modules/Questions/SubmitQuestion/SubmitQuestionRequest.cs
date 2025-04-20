@@ -10,4 +10,6 @@ public class SubmitQuestionRequest
 
     [Required(ErrorMessage = "The {0} value cannot be null.")]
     public required int Lang { get; set; }
+
+    public Guid UserId { get; set; }
 }

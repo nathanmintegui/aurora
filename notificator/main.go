@@ -1,15 +1,29 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/google/uuid"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
+type NotifierDataRequest struct {
+	Message []NotifierData `json:"message"`
+	UserId  uuid.UUID      `json:"UserId"`
+}
+
+type NotifierData struct {
+	Title   string `json:"title"`
+	Status  string `json:"status"`
+	Failure string `json:"failure"`
+}
+
 func main() {
-	http.HandleFunc("/events", eventsHandler)
+	http.HandleFunc("/events/{id}", eventsHandler)
+
 	log.Println("Server listening on port 3001...")
 	err := http.ListenAndServe(":3001", nil)
 	if err != nil {
@@ -24,6 +38,14 @@ func eventsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
+
+	userId := r.PathValue("id")
+	if userId == "" {
+		http.Error(w, "UserId is empty.", http.StatusBadRequest)
+		return
+	}
+
+	log.Printf("[DEBUG]: userID received >> %s", userId)
 
 	flusher, ok := w.(http.Flusher)
 	if !ok {
@@ -84,9 +106,19 @@ func eventsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			log.Printf("Received a message: %s", d.Body)
 
-			// Enviar evento SSE
 			fmt.Fprintf(w, "data: %s\n\n", string(d.Body))
-			flusher.Flush()
+
+			var data NotifierDataRequest
+			err = json.Unmarshal(d.Body, &data)
+			if err != nil {
+				log.Printf("[ERROR]: could not unmarshall message data")
+			}
+
+			/* Envia para o client apenas quando o ID é o mesmo */
+			if data.UserId == uuid.MustParse(userId) {
+				flusher.Flush()
+				return
+			}
 
 		case <-notifyClose:
 			log.Println("Client disconnected")

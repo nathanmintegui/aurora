@@ -109,6 +109,10 @@ export class CodeSubmitComponent implements OnInit {
     this.loader?.showLoader(true);
 
     const body = {
+      /*
+       * NOTE: hard coded for now just to test the behavior of SSE.
+       * */
+      userId: "5353aedc-c178-4677-a9dd-53cb2644a078",
       lang: this.currentQuestion.langId,
       code: this.userCode()
     };
@@ -131,7 +135,7 @@ export class CodeSubmitComponent implements OnInit {
   };
 
   setupSSE = () => {
-    const eventSource = new EventSource('http://localhost:3001/events');
+    const eventSource = new EventSource(`http://localhost:3001/events/${"5353aedc-c178-4677-a9dd-53cb2644a078"}`);
 
     eventSource.onmessage = (event) => {
       if (!event?.data) {

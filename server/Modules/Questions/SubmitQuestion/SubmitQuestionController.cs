@@ -25,6 +25,10 @@ public class SubmitQuestionController(ILogger<SubmitQuestionController> logger) 
          * NOTE: Should also retrieve the user ID by token or other way of auth.
          * */
         Guid userId = Guid.Empty;
+        if (request.UserId != Guid.Empty)
+        {
+            userId = request.UserId;
+        }
 
         if (string.IsNullOrWhiteSpace(request.Code))
         {

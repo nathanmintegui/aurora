@@ -22,6 +22,17 @@ type QueueData struct {
 	Code       string    `json:"Code"`
 }
 
+type NotifierDataRequest struct {
+	Message []NotifierData `json:"message"`
+	UserId  uuid.UUID      `json:"UserId"`
+}
+
+type NotifierData struct {
+	Title   string `json:"title"`
+	Status  string `json:"status"`
+	Failure string `json:"failure"`
+}
+
 const serverPort = 4001
 
 func failOnError(err error, msg string) {
@@ -108,6 +119,18 @@ func main() {
 			}
 			fmt.Printf("client: response body: %s\n", resBody)
 
+			var notifierDataReq NotifierDataRequest
+			err = json.Unmarshal(resBody, &notifierDataReq)
+			notifierDataReq.UserId = data.UserId
+			if err != nil {
+				fmt.Printf("could not unmarshal notifier data\n")
+			}
+
+			notifierDataBytes, err := json.Marshal(notifierDataReq)
+			if err != nil {
+				log.Printf("[ERROR]: cannot marshal notifier data req")
+			}
+
 			err = ch.PublishWithContext(ctx,
 				"",                 // exchange
 				queueResponse.Name, // routing key
@@ -115,10 +138,10 @@ func main() {
 				false,              // immediate
 				amqp.Publishing{
 					ContentType: "text/plain",
-					Body:        resBody,
+					Body:        notifierDataBytes,
 				})
 			failOnError(err, "Failed to publish a message")
-			log.Printf(" [x] Sent %s\n", resBody)
+			log.Printf(" [x] Sent %s\n", notifierDataReq)
 		}
 	}()
 
