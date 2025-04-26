@@ -1,9 +1,14 @@
 using Dapper;
 
+using Microsoft.Extensions.Caching.StackExchangeRedis;
+
 using Server.Database;
 using Server.Modules.Questions.Infrastructure;
 
 using Services;
+
+using ZiggyCreatures.Caching.Fusion;
+using ZiggyCreatures.Caching.Fusion.Serialization.SystemTextJson;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +26,17 @@ string connectionString = builder.Configuration["DbConnectionString"]
 builder.Services.AddScoped(_ => new DbSession(connectionString));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+
+/**
+ * Hybrid Caching
+ * */
+builder.Services.AddFusionCache()
+    .WithDefaultEntryOptions(options =>
+            options.Duration = TimeSpan.FromMinutes(long.Parse(builder.Configuration["DefaultCacheInMinutes"]!)))
+    .WithSerializer(new FusionCacheSystemTextJsonSerializer())
+    .WithDistributedCache(
+            new RedisCache(new RedisCacheOptions { Configuration = "localhost:6379" })
+    ).AsHybridCache();
 
 builder.Services.AddCors(options => options.AddPolicy("AngularUI",
     policy =>
@@ -52,3 +68,4 @@ app.MapControllers();
 #pragma warning disable S6966
 app.Run();
 #pragma warning restore S6966
+

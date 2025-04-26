@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Hybrid;
 
 using Server.Domain.Models;
 using Server.Modules.Questions.Infrastructure;
@@ -7,26 +8,32 @@ namespace Server.Modules.Questions.ListQuestion;
 
 [ApiController]
 [Route("questions")]
-public class ListQuestionController(IQuestionRepository questionRepository) : ControllerBase
+public class ListQuestionController(IQuestionRepository questionRepository, HybridCache hybridCache) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> List()
     {
-        List<Question> questions = await questionRepository.GetAsync();
-        if (questions.Count == 0)
-        {
-            return Ok(Enumerable.Empty<string>());
-        }
+        const string cacheKey = "Questions_";
 
-        List<QuestionResponse> response = questions
-            .Select(q => new QuestionResponse(
-                q.PublicId.Value,
-                q.Complexity.Description,
-                q.Content,
-                q.CodeQuestionScaffolds
-                    .Select(cqs => new CodeScaffoldResponse(cqs.Id, cqs.Code, cqs.Lang.Name))
-                    .ToList()))
-            .ToList();
+        List<QuestionResponse> response = await hybridCache.GetOrCreateAsync<List<QuestionResponse>>(cacheKey,
+            async _ =>
+               {
+                   List<Question> questions = await questionRepository.GetAsync();
+                   if (questions.Count == 0)
+                   {
+                       return [];
+                   }
+
+                   return questions
+                       .Select(q => new QuestionResponse(
+                           q.PublicId.Value,
+                           q.Complexity.Description,
+                           q.Content,
+                           q.CodeQuestionScaffolds
+                               .Select(cqs => new CodeScaffoldResponse(cqs.Id, cqs.Code, cqs.Lang.Name))
+                               .ToList()))
+                       .ToList();
+               }, tags: ["questions"]);
 
         return Ok(response);
     }
@@ -40,20 +47,32 @@ public class ListQuestionController(IQuestionRepository questionRepository) : Co
             return BadRequest("Question ID cannot be empty.");
         }
 
-        Question? question = await questionRepository.GetByIdAsync(id);
-        if (question is null)
+        string cacheKey = $"Question_{id}";
+
+        QuestionResponse? response = await hybridCache.GetOrCreateAsync<QuestionResponse?>(cacheKey,
+            async _ =>
+            {
+                Question? question = await questionRepository.GetByIdAsync(id);
+                if (question is null)
+                {
+                    return null;
+                }
+
+                return new QuestionResponse(
+                    question.PublicId.Value,
+                    question.Complexity.Description,
+                    question.Content,
+                    question.CodeQuestionScaffolds
+                        .Select(cqs => new CodeScaffoldResponse(cqs.Id, cqs.Code, cqs.Lang.Name))
+                        .ToList());
+            }, tags: ["questions"]);
+
+        if (response is null)
         {
             return NotFound($"Question with ID {id} was not found.");
         }
 
-        QuestionResponse response = new(
-            question.PublicId.Value,
-            question.Complexity.Description,
-            question.Content,
-            question.CodeQuestionScaffolds
-                .Select(cqs => new CodeScaffoldResponse(cqs.Id, cqs.Code, cqs.Lang.Name))
-                .ToList());
-
         return Ok(response);
     }
 }
+
