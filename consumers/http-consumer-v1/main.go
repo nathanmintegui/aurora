@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -51,12 +52,12 @@ func main() {
 	defer ch.Close()
 
 	q, err := ch.QueueDeclare(
-		"Javascript", // name
-		false,        // durable
-		false,        // delete when unused
-		false,        // exclusive
-		false,        // no-wait
-		nil,          // arguments
+		"Python", // name
+		false,    // durable
+		false,    // delete when unused
+		false,    // exclusive
+		false,    // no-wait
+		nil,      // arguments
 	)
 	failOnError(err, "Failed to declare a queue")
 
@@ -102,7 +103,11 @@ func main() {
 
 			jsonBody := []byte(data.Code)
 			bodyReader := bytes.NewReader(jsonBody)
-			requestURL := fmt.Sprintf("http://localhost:%d/questions/%s/process", serverPort, questionId)
+			requestURL := fmt.Sprintf(
+				"http://localhost:%d/questions/%s/process?lang=%s",
+				serverPort,
+				questionId,
+				strings.ToLower(data.Lang)) /* NOTE: toLower here is to avoid errors when validating lang on worker. */
 			req, err := http.NewRequest(http.MethodPost, requestURL, bodyReader)
 			if err != nil {
 				fmt.Printf("client: could not create request: %s\n", err)
