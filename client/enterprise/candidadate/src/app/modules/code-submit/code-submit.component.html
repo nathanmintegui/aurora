@@ -121,10 +121,22 @@
       </div>
 
       <div class="button-area">
-        <button [ngClass]="!loader?.isLoading ? 'submit-question-button' : 'submitted-question-button'"
-                (click)="handleClick()">Enviar
+          <button [ngClass]="questionList.length > 0 && currentQuestion.id === questionList[0].id
+                ? 'disabled-button'
+                : 'previous-question-button'"
+              (click)="handlePreviousQuestionClick()">Voltar
         </button>
-        <button class="next-question-button">Próxima Questão</button>
+        <div class="submit-and-next-area-button">
+          <button [ngClass]="!loader?.isLoading ? 'submit-question-button' : 'submitted-question-button'"
+                  (click)="handleClick()">Enviar
+          </button>
+            <button [ngClass]="questionList.length > 0 &&
+                currentQuestion.id === questionList[questionList.length - 1].id
+                ? 'disabled-button'
+                : 'next-question-button'"
+                    (click)="handleNextQuestionClick()">Próxima
+            </button>
+        </div>
       </div>
     </div>
   </div>

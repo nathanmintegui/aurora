@@ -265,4 +265,47 @@ export class CodeSubmitComponent implements OnInit {
     console.assert(newValue !== this.EMPTY_STRING)
     this.selectedTheme = newValue
   }
+
+  handleNextQuestionClick(): void {
+    console.assert(this.questionList.length > 0);
+
+    if (this.currentQuestion.id === this.questionList[this.questionList.length - 1].id) {
+      return;
+    }
+
+    const currQuestion = this.questionList.find(q => q.id === this.currentQuestion.id);
+
+    console.assert(currQuestion !== undefined);
+
+    let currentIndex = this.questionList.indexOf(currQuestion as QuestionResponseType);
+    if (currentIndex === -1) {
+      console.error('[ERROR]: unable to find index of current question on questionList array');
+      return;
+    }
+
+    currentIndex = currentIndex === 0 ? 1 : currentIndex;
+
+    this.handleChangeQuestionClick(currentIndex + 1);
+  }
+
+  handlePreviousQuestionClick(): void {
+    console.assert(this.questionList.length > 0);
+
+    if (this.currentQuestion.id === this.questionList[0].id) {
+      return;
+    }
+
+    const currQuestion = this.questionList.find(q => q.id === this.currentQuestion.id);
+
+    console.assert(currQuestion !== undefined);
+
+    let currentIndex = this.questionList.indexOf(currQuestion as QuestionResponseType);
+    if (currentIndex === -1) {
+      console.error('[ERROR]: unable to find index of current question on questionList array');
+      return;
+    }
+
+    this.handleChangeQuestionClick(currentIndex);
+  }
 }
+
