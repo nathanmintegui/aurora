@@ -307,9 +307,30 @@ form {
   display: flex;
   border-bottom: 1px solid gray;
   background-color: #e3e3e3;
+  gap: 0.5em;
 }
 
 form > label > select {
   padding: 0 1em;
+}
+
+.vim-img-mode-handler-on {
+  width: 25px;
+  height: 25px;
+}
+
+.vim-img-mode-handler-on:hover {
+  cursor: pointer;
+}
+
+.vim-img-mode-handler-off {
+  width: 25px;
+  height: 25px;
+  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%);
+}
+
+.vim-img-mode-handler-off:hover {
+  cursor: pointer;
 }
 

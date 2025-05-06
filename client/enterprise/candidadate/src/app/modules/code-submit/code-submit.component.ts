@@ -8,6 +8,7 @@ import { AsyncPipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { ViewService } from './view.service';
 import { QuestionResponseType } from '../../core/models/QuestionResponseType';
 import { vim } from '@replit/codemirror-vim';
+import { EditorState, Extension } from '@codemirror/state';
 
 type SelectedQuestion = {
   label: number;
@@ -46,6 +47,8 @@ export class CodeSubmitComponent implements OnInit {
     theme: new FormControl('light'),
   })
 
+  extensions: Array<Extension> = [];
+
   EMPTY_STRING: string = "" as const;
 
   sucessTestCount = 0;
@@ -65,9 +68,7 @@ export class CodeSubmitComponent implements OnInit {
     indentUnit: '',
     lineWrapping: false,
     highlightWhitespace: false,
-    extensions: [
-      vim()
-    ]
+    extensions: []
   };
 
   langs = ["Javascript", "C", "C++", "Python", "PHP", "Java"]
@@ -306,6 +307,15 @@ export class CodeSubmitComponent implements OnInit {
     }
 
     this.handleChangeQuestionClick(currentIndex);
+  }
+
+  /**
+   * Toggle on/off vim mode on monaco editor.
+   * */
+  handleVimModeToggleClick(): void {
+    this.extensions.length == 0
+      ? this.extensions = [vim()]
+      : this.extensions = [];
   }
 }
 

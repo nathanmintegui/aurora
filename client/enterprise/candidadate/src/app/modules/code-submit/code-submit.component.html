@@ -108,12 +108,16 @@
                 <option [value]="theme" *ngFor="let theme of themes">{{theme}}</option>
               </select>
             </label>
+
+            <img src="/assets/vim-logo.png"
+                 [ngClass]="extensions.length === 0 ? 'vim-img-mode-handler-off' : 'vim-img-mode-handler-on'"
+                 (click)="handleVimModeToggleClick()"/>
           </form>
           <code-editor id="editor" [style.font-size.px]="editorConfigForm.get('fontSize')?.value"
                        [(ngModel)]="currentQuestion.code"
                        [languages]="languages"
                        [language]="selectedLang"
-                       [extensions]="options.extensions"
+                       [extensions]="extensions"
                        [theme]="selectedTheme"
                        (ngModelChange)="log($event)">
           </code-editor>
