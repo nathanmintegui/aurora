@@ -8,7 +8,7 @@ import { AsyncPipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { ViewService } from './view.service';
 import { QuestionResponseType } from '../../core/models/QuestionResponseType';
 import { vim } from '@replit/codemirror-vim';
-import { EditorState, Extension } from '@codemirror/state';
+import { Extension } from '@codemirror/state';
 
 type SelectedQuestion = {
   label: number;

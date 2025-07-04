@@ -5,6 +5,8 @@
 	import type { QuestionResponseType } from '$lib/types';
 	import { CurrentQuestionClass } from './currentQuestion.svelte';
 	import NavigationMenu from './NavigationMenu.component.svelte';
+	import NavigationButtonArea from './NavigationButtonArea.component.svelte';
+	import CodeMirror from './CodeMirror.component.svelte';
 
 	let { data }: PageProps = $props();
 
@@ -60,8 +62,10 @@
 			</div>
 		</div>
 		<!-- | Question Container | -->
-
-		<div class="editor-container"></div>
+		<div class="editor-container">
+			<CodeMirror />
+			<NavigationButtonArea questionList={questionsList} />
+		</div>
 	</div>
 </div>
 
@@ -71,5 +75,15 @@
 		height: 100vh;
 		display: flex;
 		flex-direction: column;
+	}
+
+	.code-area {
+		display: flex;
+	}
+
+	.editor-container {
+		width: 50%;
+		border-left: 1px solid black;
+		position: relative;
 	}
 </style>
