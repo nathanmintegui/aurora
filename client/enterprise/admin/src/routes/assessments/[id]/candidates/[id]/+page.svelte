@@ -1,7 +1,12 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
+	import { page } from '$app/stores'
 
 	let { data }: PageProps = $props();
+	
+	const current_route = $page.url.pathname
+			.split("/")
+			.filter(i => isNaN(i) && i.length !== 36);
 
 	const result_card_map = {
 		easy: {
@@ -22,7 +27,20 @@
 	const assessment_info = data?.assessment_info || {};
 </script>
 
-<div>
+<svelte:head>
+	<title>Aurora | Perfomance</title>
+</svelte:head>
+
+<div class="flex gap-2 cursor-pointer p-4 bg-gray-300">
+	{#each current_route as menu, idx}
+		<p class="hover:text-stone-700">{menu}</p>
+		{#if idx < current_route.length - 1}
+			<p>></p>
+		{/if}
+	{/each}
+</div>
+
+<div class="cursor-default">
 	<p>{personal_info.name}</p>
 	<p>{personal_info.specialization}</p>
 	<p>{personal_info.email}</p>
