@@ -1,14 +1,12 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
-	import CandidateCardAssessment from './components/CandidateCardAssessment.component.svelte';
 	import { page } from '$app/stores';
 
 	let { data }: PageProps = $props();
 
 	const current_route = $page.url.pathname.split('/').filter((i) => isNaN(i) && i.length !== 36);
 
-	const candidates = data.candidates;
-	const assessment = data.assessment;
+	const assessments = data?.assessments;
 </script>
 
 <svelte:head>
@@ -25,15 +23,25 @@
 </div>
 
 <div class="m-4">
-	<div class="">
-		<p>Assesment <strong>{assessment.name}</strong></p>
-		<p>Assesment ID <strong>{assessment.id}</strong></p>
-		<p>Qualyfing criteria <strong>{assessment.qualifying_criteria}%</strong></p>
-	</div>
-
 	<div class="flex flex-col gap-2">
-		{#each candidates as candidate}
-			<CandidateCardAssessment {...candidate} assessment_id={assessment.id} />
+		{#each assessments as assessment}
+			{@render render_assessment(assessment)}
 		{/each}
 	</div>
 </div>
+
+{#snippet render_assessment(assessment)}
+	<a
+		href={'/assessments/' + assessment?.id}
+		class="flex cursor-pointer items-center justify-between border-b p-4 transition-colors duration-200 hover:bg-slate-200"
+	>
+		<div>
+			<p><strong>#{assessment.id}<strong /></strong></p>
+			<p>{assessment.name}</p>
+		</div>
+
+		<div>
+			<p>{assessment.qualyfing_criteria}%</p>
+		</div>
+	</a>
+{/snippet}
