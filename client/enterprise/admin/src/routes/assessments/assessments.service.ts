@@ -1,10 +1,6 @@
 import { mock_request } from '$lib/httpClient.local';
-
-type AssessmentType = {
-	id: number;
-	name: string;
-	qualyfing_criteria: number;
-};
+import { get_with_retry } from '$lib/httpClient';
+import type { AssessmentType } from '$lib/types';
 
 /**
  * Return list of assessments.
@@ -13,8 +9,8 @@ type AssessmentType = {
  * @param [page_size=10] page_size
  * */
 export async function get_assessments(
-	page_number: number = 1,
-	page_size: number = 10
+	_page_number: number = 1,
+	_page_size: number = 10
 ): Promise<Array<AssessmentType>> {
 	if (process.env.NODE_ENV === 'development') {
 		return await mock_request<Array<AssessmentType>>(
@@ -34,5 +30,5 @@ export async function get_assessments(
 		);
 	}
 
-	return get_with_retry(`/some-uri/${id}`);
+	return get_with_retry(`/some-uri`);
 }

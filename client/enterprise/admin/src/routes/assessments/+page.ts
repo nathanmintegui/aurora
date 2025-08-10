@@ -1,6 +1,6 @@
 import { get_assessments } from './assessments.service';
 
-export async function load({ params }: Record<string, any>) {
+export async function load() {
 	return {
 		assessments: await get_assessments()
 	};

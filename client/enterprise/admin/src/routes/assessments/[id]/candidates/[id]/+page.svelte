@@ -4,7 +4,9 @@
 
 	let { data }: PageProps = $props();
 
-	const current_route = $page.url.pathname.split('/').filter((i) => isNaN(i) && i.length !== 36);
+	const current_route = $page.url.pathname
+		.split('/')
+		.filter((i) => Number.isNaN(Number(i)) && i.length !== 36);
 
 	const result_card_map = {
 		easy: {
@@ -54,11 +56,13 @@
 </div>
 
 {#snippet result_card(difficulty: string, total: number, hits: number)}
-	<p>{result_card_map[difficulty].label}</p>
+	<p>{result_card_map[difficulty as keyof typeof result_card_map].label}</p>
 	<div class="flex items-center gap-3">
 		<div class="flex gap-1">
 			{#each { length: total }, idx}
-				<div class={`h-4 w-4 border ${idx < hits && result_card_map[difficulty].class}`}></div>
+				<div
+					class={`h-4 w-4 border ${idx < hits && result_card_map[difficulty as keyof typeof result_card_map].class}`}
+				></div>
 			{/each}
 		</div>
 		<p>{hits}/{total}</p>

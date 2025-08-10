@@ -1,10 +1,13 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
 	import { page } from '$app/stores';
+	import type { AssessmentType } from '$lib/types';
 
 	let { data }: PageProps = $props();
 
-	const current_route = $page.url.pathname.split('/').filter((i) => isNaN(i) && i.length !== 36);
+	const current_route = $page.url.pathname
+		.split('/')
+		.filter((i) => Number.isNaN(Number(i)) && i.length !== 36);
 
 	const assessments = data?.assessments;
 </script>
@@ -30,18 +33,19 @@
 	</div>
 </div>
 
-{#snippet render_assessment(assessment)}
+{#snippet render_assessment(assessment: AssessmentType)}
 	<a
 		href={'/assessments/' + assessment?.id}
 		class="flex cursor-pointer items-center justify-between border-b p-4 transition-colors duration-200 hover:bg-slate-200"
 	>
 		<div>
-			<p><strong>#{assessment.id}<strong /></strong></p>
+			<p><strong>#{assessment.id}</strong></p>
 			<p>{assessment.name}</p>
-		</div>
-
-		<div>
-			<p>{assessment.qualyfing_criteria}%</p>
-		</div>
-	</a>
+			<div>
+				<div>
+					<p>{assessment.qualyfing_criteria}%</p>
+				</div>
+			</div>
+		</div></a
+	>
 {/snippet}

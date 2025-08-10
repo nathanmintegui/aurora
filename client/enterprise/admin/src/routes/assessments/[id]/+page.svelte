@@ -5,7 +5,9 @@
 
 	let { data }: PageProps = $props();
 
-	const current_route = $page.url.pathname.split('/').filter((i) => isNaN(i) && i.length !== 36);
+	const current_route = $page.url.pathname
+		.split('/')
+		.filter((i) => Number.isNaN(Number(i)) && i.length !== 36);
 
 	const candidates = data.candidates;
 	const assessment = data.assessment;
