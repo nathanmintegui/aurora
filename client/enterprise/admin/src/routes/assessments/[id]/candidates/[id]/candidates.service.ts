@@ -24,7 +24,6 @@ type CandidatePerformanceType = {
 				hits: number;
 			};
 		};
-		questions: {};
 	};
 };
 
@@ -65,8 +64,7 @@ export async function get_candidate_perfomance(
 							total: 1,
 							hits: 1
 						}
-					},
-					questions: {}
+					}
 				}
 			},
 			{ status: 200 }

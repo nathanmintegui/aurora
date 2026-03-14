@@ -1,0 +1,98 @@
+# ConfigMap para configurações da API
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aurora-api-config
+  namespace: aurora-app
+data:
+  config.json: |
+    {
+      "database": {
+        "host": "postgres-service",
+        "port": "5432",
+        "name": "aurora_db"
+      },
+      "server": {
+        "port": "8080"
+      }
+    }
+---
+# Secret para dados sensíveis
+apiVersion: v1
+kind: Secret
+metadata:
+  name: aurora-api-secrets
+  namespace: aurora-app
+type: Opaque
+data:
+  db-password: cGFzc3dvcmQxMjM=  # base64 encoded "password123"
+  jwt-secret: bXlfc3VwZXJfc2VjcmV0X2tleQ==  # base64 encoded "my_super_secret_key"
+---
+# PersistentVolumeClaim para dados temporários
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: aurora-api-tmp-pvc
+  namespace: aurora-app
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# Deployment atualizado com volumes e configs
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aurora-api-with-volumes
+  namespace: aurora-app
+  labels:
+    app: aurora-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: aurora-api
+  template:
+    metadata:
+      labels:
+        app: aurora-api
+    spec:
+      containers:
+      - name: aurora-api
+        image: aurora-api:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: GIN_MODE
+          value: "release"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: aurora-api-secrets
+              key: db-password
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: aurora-api-secrets
+              key: jwt-secret
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+        - name: tmp-volume
+          mountPath: /app/tmp
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+      volumes:
+      - name: config-volume
+        configMap:
+          name: aurora-api-config
+      - name: tmp-volume
+        persistentVolumeClaim:
+          claimName: aurora-api-tmp-pvc

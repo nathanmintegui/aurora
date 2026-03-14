@@ -32,7 +32,7 @@
 </svelte:head>
 
 <div class="flex cursor-pointer gap-2 bg-gray-300 p-4">
-	{#each current_route as menu, idx}
+	{#each current_route as menu, idx (menu)}
 		<p class="hover:text-stone-700">{menu}</p>
 		{#if idx < current_route.length - 1}
 			<p>></p>
@@ -49,7 +49,7 @@
 
 	<p>Questões</p>
 	<div>
-		{#each Object.entries(assessment_info.results) as [key, value]}
+		{#each Object.entries(assessment_info.results) as [key, value] (key)}
 			{@render result_card(key, value.total, value.hits)}
 		{/each}
 	</div>

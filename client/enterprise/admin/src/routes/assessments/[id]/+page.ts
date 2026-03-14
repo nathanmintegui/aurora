@@ -1,6 +1,6 @@
 import { get_assessments_by_id } from './assessment.service';
 
-export async function load({ params }: Record<string, any>) {
+export async function load({ params }: { params: { id: string } }) {
 	return {
 		candidates: await get_assessments_by_id(params.id),
 		assessment: {

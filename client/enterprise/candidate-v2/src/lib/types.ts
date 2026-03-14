@@ -10,3 +10,12 @@ export type CodeScaffoldType = {
 	code: string;
 	lang: string;
 };
+
+export enum LanguagesEnum {
+	JAVASCRIPT = "Javascript",
+	C = "C",
+	CPP = "C++",
+	PYTHON = "Python",
+	PHP = "PHP",
+	JAVA = "Java"
+}

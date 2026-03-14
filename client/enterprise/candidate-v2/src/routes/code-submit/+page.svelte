@@ -3,12 +3,19 @@
 	import { Webcam } from './webcam';
 	import type { PageProps } from './$types';
 	import type { QuestionResponseType } from '$lib/types';
-	import { CurrentQuestionClass } from './currentQuestion.svelte';
+	import { CurrentQuestionClass, getCurrentQuestionState } from './currentQuestion.svelte';
 	import NavigationMenu from './NavigationMenu.component.svelte';
 	import NavigationButtonArea from './NavigationButtonArea.component.svelte';
-	import CodeMirror from './CodeMirror.component.svelte';
+	import CodeMirror from 'svelte-codemirror-editor';
+	import constants from '$lib/constants';
+	import EditorConfigForm from './EditorConfigForm.component.svelte';
+	import { EditorConfigClass, getCurrentEditorConfigState } from './editorConfig.svelte';
 
 	let { data }: PageProps = $props();
+	/* NOTE: This value represents the initial code for the user. */
+	let value: string = $state(constants.EMPTY_STRING);
+	let editorConfig = new EditorConfigClass();
+	let editorExtensions = $derived(editorConfig.extensions);
 
 	let mockVideoEl: HTMLVideoElement | null = null;
 	let outputVideoEl: HTMLVideoElement | null = null;
@@ -63,7 +70,8 @@
 		</div>
 		<!-- | Question Container | -->
 		<div class="editor-container">
-			<CodeMirror />
+			<EditorConfigForm />
+			<CodeMirror bind:value lang={editorConfig.language} extensions={editorExtensions} />
 			<NavigationButtonArea questionList={questionsList} />
 		</div>
 	</div>

@@ -6,7 +6,7 @@ export async function get_with_retry(uri: string, retry_count: number = RETRY_CO
 	while (count > 0) {
 		try {
 			return (await get(uri)).json();
-		} catch (_err) {
+		} catch (_) {
 			//log.info('retry 1')
 		}
 		count -= 1;

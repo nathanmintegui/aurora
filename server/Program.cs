@@ -34,9 +34,9 @@ builder.Services.AddFusionCache()
     .WithDefaultEntryOptions(options =>
             options.Duration = TimeSpan.FromMinutes(long.Parse(builder.Configuration["DefaultCacheInMinutes"]!)))
     .WithSerializer(new FusionCacheSystemTextJsonSerializer())
-    .WithDistributedCache(
-            new RedisCache(new RedisCacheOptions { Configuration = "localhost:6379" })
-    ).AsHybridCache();
+    //    .WithDistributedCache(
+    //           new RedisCache(new RedisCacheOptions { Configuration = "localhost:6379" })
+    .AsHybridCache();
 
 builder.Services.AddCors(options => options.AddPolicy("AngularUI",
     policy =>

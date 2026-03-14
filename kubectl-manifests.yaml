@@ -1,0 +1,152 @@
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: aurora-app
+---
+# Go API Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aurora-api
+  namespace: aurora-app
+  labels:
+    app: aurora-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: aurora-api
+  template:
+    metadata:
+      labels:
+        app: aurora-api
+    spec:
+      containers:
+      - name: aurora-api
+        image: aurora-api:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: GIN_MODE
+          value: "release"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+# Go API Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: aurora-api-service
+  namespace: aurora-app
+spec:
+  selector:
+    app: aurora-api
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  type: ClusterIP
+---
+# Angular Frontend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aurora-client
+  namespace: aurora-app
+  labels:
+    app: aurora-client
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: aurora-client
+  template:
+    metadata:
+      labels:
+        app: aurora-client
+    spec:
+      containers:
+      - name: aurora-client
+        image: aurora-client:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "25m"
+          limits:
+            memory: "64Mi"
+            cpu: "50m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+# Angular Frontend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: aurora-client-service
+  namespace: aurora-app
+spec:
+  selector:
+    app: aurora-client
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+  type: ClusterIP
+---
+# Ingress (para expor as aplicações)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aurora-ingress
+  namespace: aurora-app
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: aurora.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: aurora-client-service
+            port:
+              number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: aurora-api-service
+            port:
+              number: 8080
