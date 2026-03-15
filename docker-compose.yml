@@ -1,4 +1,16 @@
 services:
+  postgres:
+    image: postgres:18-alpine
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: aurora
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
   rabbitmq:
     image: rabbitmq:4.0-management
     ports:
