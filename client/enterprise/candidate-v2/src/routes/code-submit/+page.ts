@@ -7,7 +7,7 @@ export async function load({ fetch }: Parameters<PageLoad>[0]) {
 	const maxTries = 3 as const;
 	while (true) {
 		try {
-			const res = await fetch('http://localhost:5002/questions');
+			const res = await fetch('http://localhost:8080/questions');
 			const questions: Array<QuestionResponseType> = await res.json();
 			Logger.assert(questions.length !== 0);
 			return { questions };
